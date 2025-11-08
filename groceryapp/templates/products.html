@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        {% include 'adminnav.html' %}
+         <a href='/addproduct/' class="btn btn-primary"> add new Product</a>
+
+         <h1>Products</h1>
+
+  <table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th scope="col">No</th>
+      <th scope="col">product name</th>
+      <th scope="col">image</th>
+      <th scope="col">our price </th>
+      <th scope="col">orginal price </th>
+      <th scope="col">Tax amount </th>
+      <th scope="col">open stock </th>
+      <th scope="col">current stock </th>
+      <th scope="col">Description </th>
+       <th scope="col">Brand name </th>
+       <th scope="col">catogary </th>
+      <th scope="col">status</th>
+      <th>Edit </th>
+      <th>Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in data%}
+    <tr>
+      <th scope="row">{{i.id}}</th>
+      <td>{{i.name}}</td>
+      <td><img src='{{i.image.url}}' height=100 width=100 ></td>
+      <td> {{i.our_price}}</td>
+       <td> {{i.orginal_price}}</td>
+       <td>{{i.tax_amount}}</td>
+       <td>{{i.open_stock}}</td>
+         <td>{{i.current_stock}}</td>
+      <td>{{i.description}}</td>
+      <td>{{i.brand.brandname}}</td>
+         <td>{{i.catogary.catogaryname}}</td>
+      <td>{{i.status}}</td>
+      <td><a href='/productedit/{{i.id}}'>Edit</a></td>
+      <td><a href='/productdelete/{{i.id}}'>Delete</a></td>
+    </tr>
+    {%endfor%}
+</tbody>
+
+</table>
+    </body>
+</html>

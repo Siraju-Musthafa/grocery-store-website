@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+    <body>
+                {% include 'adminnav.html' %}
+
+        <h1>Add new Catogary</h1>
+
+ <form action='/addcatogaryhandle/' method='POST' enctype="multipart/form-data">{% csrf_token %}
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputEmail4">catogary name</label>
+      <input type="text" class="form-control" id="inputEmail4" name='catogaryname'>
+    </div>
+    <div class="form-group col-md-6">
+      <label for="inputPassword4">images</label>
+      <input type="file" class="form-control" id="inputPassword4" name='image'>
+    </div>
+  </div>
+  <div class="form-group col-md-6">
+    <label for="inputAddress">Status</label>
+    <select name="status" class='form-control'>
+        <option value='Active'>Active</option>
+          <option value='Inactive'>Inactive</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">Add</button>
+</form>
+        
+        <script src="" async defer></script>
+    </body>
+</html>

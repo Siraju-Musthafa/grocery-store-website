@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        {% include 'adminnav.html' %}
+         <a href='/addbrand/' class="btn btn-primary"> add new Brand</a>
+
+         <h1>Brands</h1>
+
+  <table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th scope="col">No</th>
+      <th scope="col">Brand name</th>
+      <th scope="col">image</th>
+      <th scope="col">status</th>
+      <th>Edit </th>
+      <th>Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in data%}
+    <tr>
+      <th scope="row">{{i.id}}</th>
+      <td>{{i.brandname}}</td>
+      <td><img src='{{i.brandimage.url}}' height=100 width=100 ></td>
+      <td>{{i.brandstatus}}</td>
+      <td><a href='/brandedit/{{i.id}}'>Edit</a></td>
+      <td><a href='/branddelete/{{i.id}}'>Delete</a></td>
+    </tr>
+    {%endfor%}
+</tbody>
+
+</table>
+    </body>
+</html>

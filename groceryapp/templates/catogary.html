@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        {% include 'adminnav.html' %}
+         <a href='/addcatogary/' class="btn btn-primary"> add new catogary</a>
+
+         <h1>catogary</h1>
+
+  <table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th scope="col">No</th>
+      <th scope="col">Catogary name</th>
+      <th scope="col">image</th>
+      <th scope="col">status</th>
+      <th>Edit </th>
+      <th>Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in data%}
+    <tr>
+      <th scope="row">{{i.id}}</th>
+      <td>{{i.catogaryname}}</td>
+      <td><img src='{{i.catogaryimage.url}}' height=100 width=100 ></td>
+      <td>{{i.catogarystatus}}</td>
+      <td><a href='/catogaryedit/{{i.id}}'>Edit</a></td>
+      <td><a href='/catogarydelete/{{i.id}}'>Delete</a></td>
+    </tr>
+    {%endfor%}
+</tbody>
+
+</table>
+    </body>
+</html>

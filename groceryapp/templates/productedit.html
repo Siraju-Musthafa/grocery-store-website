@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+    <body>
+         {% include 'adminnav.html' %}
+   
+ name=models.CharField(max_length=100,null=True)
+       image=models.ImageField(upload_to='media',null=True)
+       description=models.CharField(max_length=100,null=True)
+       status=models.CharField(max_length=30,null=True)
+       brand=models.ForeignKey(brandstable,on_delete=models.CASCADE,null=True)
+       our_price=models.FloatField(null=True)
+       orginal_price=models.FloatField(null=True)
+       tax_amount=models.FloatField(null=True)
+       open_stock=models.FloatField(null=True)
+       current_stock=models.FloatField(null=True)
+       catogary=models.ForeignKey(catogarytable,on_delete=models.CASCADE,null=True)
+
+        <h1>edit this product</h1>
+      <form action='/productedithandle/{{data.id}}' method='POST' enctype="multipart/form-data">{% csrf_token %}
+     <div class="form-row">
+     <div class="form-group col-md-6">
+      <label for="inputEmail4">product name</label>
+      <input type="text" class="form-control" value={{data.name}} id="inputEmail4" name='name'>
+     </div>
+     <div class="form-group col-md-6">
+      <label for="inputPassword4">images</label>
+      <img src='{{data.image.url}}'>
+      <input type="file" class="form-control" id="inputPassword4" name='image' >
+     </div>
+     <div class="form-group col-md-6">
+      <label for="inputPassword4">description</label>
+      <input type="text" class="form-control" id="inputPassword4" name='description' value='{{data.description}}' >
+    
+       <div class="form-group col-md-6">
+      <label for="inputPassword4">brand</label>
+      <input type="text"  value='{{data.brand}}' class="form-control" id="inputPassword4" name='brand' >
+     </div>
+      <div class="form-group col-md-6">
+      <label for="inputAddress">Status</label>
+     <input type="text" class="form-control" id="inputAddress" value='{{data.status}}' name='status'>
+     </div>
+      <button type="submit" class="btn btn-primary">Edit</button>
+     </form>
+        
+        <script src="" async defer></script>
+    </body>
+</html>
