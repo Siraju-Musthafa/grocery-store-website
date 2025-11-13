@@ -1,8 +1,15 @@
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate,login,logout
 from .models import *
 from django.db.models import Q
 from django.db.models import Count
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import productstable, Cart, Order
+import razorpay
+razorpay_client = razorpay.Client(auth=('rzp_test_9zruMnoLDlsCLG','oXUZ9Mf5zhjoZsTFLc7RpABO'))
 # Create your views here.
 def index(request):
     data=productstable.objects.all()
@@ -10,9 +17,11 @@ def index(request):
 
 def shop(request):
     data=productstable.objects.all()
+    cart=Cart.objects.filter(user=request.user)
+    lencart=len(cart)
     catogary=catogarytable.objects.annotate(product_count=Count('productstable'))
 
-    return render(request,'shop.html',{'data':data,'catogary':catogary})
+    return render(request,'shop.html',{'data':data,'length':lencart,'catogary':catogary})
 
 def shopdetail(request,id):
     product=productstable.objects.get(id=id)
@@ -24,7 +33,9 @@ def contact(request):
     return render(request,'contact.html')
 
 def cart(request):
-    return render(request,'cart.html')
+     cart=Cart.objects.filter(user=request.user)
+     lencart=len(cart)
+     return render(request,'cart.html',{'length':lencart})
 
 def Login(request):
     return render(request,'login.html')
@@ -36,7 +47,10 @@ def  checklogin(request):
         user=authenticate(request,username=username,password=password)
         if user is not None:
            login(request,user)
-           return redirect('/dashboard',{'user':user})
+           if user.username=='admin':
+              return redirect('/dashboard',{'user':user})
+           else:
+               return redirect('/')
         else:
              return redirect('/login/')
 
@@ -203,4 +217,97 @@ def productsearch(request):
         )
      return render(request,'shop.html',{'data':products,'catogary':catogary})    
      
+def vegsearch(request):
+    # products=productstable.objects.filter(catogary='vegitable') 
+    return render(request,"trdf.html",{'data':products})
+
+def fruitssearch(request):
+    fruitscatogary=catogarytable.objects.get(catogaryname='fruits')
+    products=productstable.objects.filter(catogary=fruitscatogary) 
+    print(products)
+    print('hello siraj')
+    return render(request,"shop.html",{'data':products})
+
+
+
+@login_required
+def add_to_cart(request, product_id):
+   # product = get_object_or_404(productstable, id=product_id)
+    product=productstable.objects.get(id=product_id)
+
    
+    if product.status=='Active':
+        if  Cart.objects.filter(user=request.user,product_id=product_id):
+             cart=Cart.objects.get(user=request.user,product=product)
+             cart.quantity= cart.quantity+1
+             cart.save()
+             return redirect('/view_cart/')
+        else:
+            if product.current_stock>=0:
+                Cart.objects.create(user=request.user,product_id=product_id)
+                messages.success(request, "product added in cart!")
+    return redirect('view_cart')
+
+
+@login_required
+def view_cart(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    total = sum(item.total_price() for item in cart_items)
+    return render(request, 'cart.html', {'cart_items': cart_items, 'total': total})
+
+
+@login_required
+def checkout(request):
+        cart_items = Cart.objects.filter(user=request.user)
+        cart=len( cart_items)
+        total = sum(item.total_price() for item in cart_items)
+    
+        order = Order.objects.create(user=request.user, total_amount=total)
+        order.products.set(cart_items)
+        cart_items.delete()
+        currency = "INR"
+        amount = int(total * 100) 
+        razorpay_order=razorpay_client.order.create(dict(amount=amount,currency=currency,payment_capture='0'))
+        razorpay_order_id = razorpay_order['id']
+        context = {}
+        context['razorpay_order_id'] = razorpay_order_id
+        context['razorpay_merchant_key'] = 'rzp_test_9zruMnoLDlsCLG'
+        context['razorpay_amount'] = amount
+        context['currency'] = currency
+        context['data']=order
+        context['cart']=cart
+        context['total']=total
+        return render(request, 'checkout.html',context)
+    
+
+    
+    #return render(request, 'checkout.html', {'cart_items': cart_items, 'cart':cart,'total': total})
+
+def paymenthandler(request):
+        razorpay_order_id = request.POST.get('order_id')
+        payment_id = request.POST.get('payment_id', '')      
+        amount = int(request.POST.get('amount',0))
+        try:
+            razorpay_client.payment.capture(payment_id, amount)
+            obj=orderupdates()
+            obj.orderid=razorpay_order_id
+            obj.amount=int(amount)/100
+            obj.paymentid=payment_id
+            obj.save()
+            return redirect('/payment_success/')
+        except razorpay.errors.SignatureVerificationError:
+            return HttpResponseBadRequest("Signature verification failed.")
+        except razorpay.errors.BadRequestError as e:
+            print("Bad Request Error:", e)
+            return HttpResponseBadRequest(f"Payment capture failed: {e}")
+        except Exception as e:
+            print("Unexpected error:", e)
+            return HttpResponseBadRequest(f"Server error: {e}")
+   
+def removecart(request,id):
+    cart=Cart.objects.get(id=id)
+    cart.delete()
+    return redirect('/cart/')
+
+def ordersuccess(request):
+    return render(request,'order_success.html')

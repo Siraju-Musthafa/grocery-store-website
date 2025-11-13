@@ -7,7 +7,6 @@ urlpatterns = [
     path('shop/',views.shop),
     path('shop-detail/<id>',views.shopdetail),
     path('contact/',views.contact),
-    path('cart/',views.cart),
     path('login/',views.Login),
     path('check_login/',views.checklogin),
     path('dashboard/',views.dashboard),
@@ -34,5 +33,14 @@ urlpatterns = [
     path('low_to_high/',views.low_to_high),
     path('high_to_low/',views.high_to_low),
     path('productsearch/',views.productsearch),
+    path('vegsearch/',views.vegsearch),
+    path('fruitssearch/',views.fruitssearch),
+    path('add_to_cart/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
+    path('cart/', views.view_cart, name='view_cart'),
+    path('checkout/', views.checkout, name='checkout'),
+    path('paymenthandler/',views.paymenthandler),
+    path('view_cart/',views.view_cart),
+    path('removecart/<id>',views.removecart),
+    path('payment_success/',views.ordersuccess),
 
 ]
